@@ -1,5 +1,7 @@
 <?php 
 
+namespace Core; 
+// use App\controller\Home; 
 class Router {
     /**
      * Associative array of routes, the routing table
@@ -89,6 +91,101 @@ class Router {
        public function getParams() {
         return $this->matchedParams;
        }
+  
+
+       public function dispatch($url) {
+
+        $url = $this->removeQueryStringVariables($url);
+
+         if($this->match($url)) {
+
+          $params = $this->getParams(); 
+          $controller = $params['controller']; 
+          $controller = $this->converToStudlyCaps($controller); 
+          $controller = "App\Controllers\\$controller"; 
+          echo $controller. '-> controller <br>'; 
+
+          if(class_exists($controller)) {
+            $controllerObj = new $controller(); 
+            $action = $params['action']; 
+            $action = $this->converToCamelCase($action); 
+            // echo is_callable($action). ' sdfds'. '<br>'; 
+            if(is_callable([$controllerObj, $action])) {
+
+              $result = $controllerObj->$action(); 
+
+            }
+            else {
+              echo $action.' mehtod does not exist in '.$controller. ' class'; 
+            }
+        
+
+          }
+          else {
+            echo $controller.' class does not exist.'; 
+          }
+
+
+
+         }
+         else {
+          echo ' No route has matched'; 
+         }
+       }
+
+
+       public function converToStudlyCaps($controller) {
+
+        return str_replace("-", '', ucwords($controller, '-'));
+       }
+
+       public function converToCamelCase($action) {
+        return lcfirst($this->converToStudlyCaps($action)); 
+       }
+       
+
+
+       /**
+     * Remove the query string variables from the URL (if any). As the full
+     * query string is used for the route, any variables at the end will need
+     * to be removed before the route is matched to the routing table. For
+     * example:
+     *
+     *   URL                           $_SERVER['QUERY_STRING']  Route
+     *   -------------------------------------------------------------------
+     *   localhost                     ''                        ''
+     *   localhost/?                   ''                        ''
+     *   localhost/?page=1             page=1                    ''
+     *   localhost/posts?page=1        posts&page=1              posts
+     *   localhost/posts/index         posts/index               posts/index
+     *   localhost/posts/index?page=1  posts/index&page=1        posts/index
+     *
+     * A URL of the format localhost/?page (one variable name, no value) won't
+     * work however. (NB. The .htaccess file converts the first ? to a & when
+     * it's passed through to the $_SERVER variable).
+     *
+     * @param string $url The full URL
+     *
+     * @return string The URL with the query string variables removed
+     */
+    protected function removeQueryStringVariables($url)
+    {
+     
+        if ($url != '') {
+            $parts = explode('&', $url);
+            if (strpos($parts[0], '=') === false) {
+                $url = $parts[0];
+            } else {
+                $url = '';
+            }
+        }
+
+        echo $url. ' -- $urk'; 
+
+        return $url;
+    }
+
+
 
     
 }

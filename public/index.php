@@ -1,8 +1,32 @@
 
 <?php 
 
-require '../Core/Router.php';
+// require '../Core/Router.php';
 // require './Router2.php';
+// require '../App/Controllers/Posts.php';
+
+
+
+/**
+ * Autloader
+ * 
+ */
+
+ spl_autoload_register(function($className){
+
+    $root = dirname(__DIR__); 
+    // echo $root. ' ->root files <br>'; 
+    $file = $root.'/'.str_replace('\\', '/',$className). '.php';
+    // echo $file. ' ->file files <br>';  
+    if(is_readable($file)) {
+        require $file; 
+    }
+
+ });
+
+ use Core\Router; 
+
+//  use App\controller\Home, App\controller\Posts; 
 
 $router = new Router(); 
 
@@ -29,9 +53,7 @@ $url = $_SERVER['QUERY_STRING'];
 
 echo '<pre>';
 
-if($router->match($url)) {
-    echo var_dump($router->getParams()); 
-}
+$router->dispatch($url); 
 
 echo '</pre>';
 
