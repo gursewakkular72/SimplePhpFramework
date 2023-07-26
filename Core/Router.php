@@ -106,18 +106,16 @@ class Router {
           echo $controller. '-> controller <br>'; 
 
           if(class_exists($controller)) {
-            $controllerObj = new $controller(); 
+            $controllerObj = new $controller($this->matchedParams); 
             $action = $params['action']; 
             $action = $this->converToCamelCase($action); 
-            // echo is_callable($action). ' sdfds'. '<br>'; 
-            if(is_callable([$controllerObj, $action])) {
 
-              $result = $controllerObj->$action(); 
-
-            }
-            else {
-              echo $action.' mehtod does not exist in '.$controller. ' class'; 
-            }
+            // checking if the action has 'Action' suffix
+            if (preg_match('/action$/i', $action) == 0) {
+              $controllerObj->$action();
+          } else {
+              throw new \Exception("Method $action in controller $controller cannot be called directly - remove the Action suffix to call this method");
+          }
         
 
           }

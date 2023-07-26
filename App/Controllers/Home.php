@@ -3,12 +3,13 @@
 namespace App\Controllers; 
 
 
+
 /**
  * Home controller;
  * 
  * 
  */
-class Home {
+ class Home extends \Core\Controller {
 
 
 
@@ -18,7 +19,7 @@ class Home {
  * @return void
  */
 
-    public function index(){
+    public function indexAction(){
         echo "Hello from the index action of Home Controller.";
         echo "<pre?> Query Parameters: ".
         htmlspecialchars(print_r($_GET,true)).'</pre>';
